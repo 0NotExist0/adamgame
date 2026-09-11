@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adam Zombie Game - Selettore Giochi</title>
+    <style>
+        #gameContainer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameCanvas {
+            border: 3px solid #00ffcc;
+            box-shadow: 0 0 50px rgba(0, 255, 204, 0.5);
+            max-width: 95%;
+            max-height: 90%;
+        }
+
+        #closeBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 51, 102, 0.8);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 2001;
+            transition: all 0.3s ease;
+        }
+
+        #closeBtn:hover {
+            background: rgba(255, 51, 102, 1);
+            transform: scale(1.1);
+        }
+
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #loadingSpinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(0, 255, 204, 0.3);
+            border-top-color: #00ffcc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #loadingText {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #00ffcc;
+        }
+    </style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(0, 255, 255, 0.5); }
+            to { text-shadow: 0 0 30px rgba(0, 255, 255, 1); }
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            color: #a0a0c0;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.3);
+            border-color: #00ffcc;
+        }
+
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .alien-icon { color: #00ffff; }
+        .zombie-icon { color: #ff3366; }
+
+        .game-title {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .game-desc {
+            color: #a0a0c0;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .play-btn {
+            background: linear-gradient(45deg, #00ffcc, #00d4ff);
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.6);
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            background: rgba(0, 255, 204, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #00ffcc;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .status.hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Adam Zombie Game</h1>
+        <p class="subtitle">Scegli il tuo gioco preferito e inizia l'avventura!</p>
+
+        <div class="games-grid">
+            <!-- Alien Destroyer -->
+            <div class="game-card" onclick="loadGame('alien')">
+                <div class="game-icon alien-icon">👾</div>
+                <h2 class="game-title">Alien Destroyer</h2>
+                <p class="game-desc">
+                    Distruggi gli alien invasori nello spazio! La tua nave deve sopravvivere alle loro ondate mentre guadagni punti e sali di livello.
+                </p>
+                <div class="features">
+                    <span class="feature-tag">🔫 Sparo Auto</span>
+                    <span class="feature-tag">⭐ Livelli</span>
+                    <span class="feature-tag">🎯 Mouse Control</span>
+                </div>
+                <button class="play-btn">Gioca Ora</button>
+            </div>
+
+            <!-- Zombie Game -->
+            <div class="game-card" onclick="loadGame('zombie')">
+                <div class="game-icon zombie-icon">🧟</div>
+                <h2 class="game-title">Zombie Survival</h2>
+                <p class="game-desc">
+                    Sopravvivi all'apocalisse zombie! Spara, muovi e gestisci le tue munizioni in questa intensa sessione multiplayer.
+                </p>
+                <div class="features">
+                    <span class="feature-tag">🔫 Sparo Manuale</span>
+                    <span class="feature-tag">👥 Multiplayer</span>
+                    <span class="feature-tag">🎯 Controllo Totale</span>
+                </div>
+                <button class="play-btn">Gioca Ora</button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loadingScreen">
+            <div id="loadingSpinner"></div>
+            <div id="loadingText">Caricamento gioco...</div>
+        </div>
+
+        <!-- Game Container -->
+        <div id="gameContainer">
+            <button id="closeBtn" onclick="closeGame()">❌ Chiudi Gioco</button>
+            <canvas id="gameCanvas"></canvas>
+        </div>
+
+        <footer>
+            &copy; 2026 Adam Zombie Game - Creato da Not Exist | Tutti i diritti riservati
+        </footer>
+
+        <script>
+            const games = {
+                alien: {
+                    type: 'alien',
+                    canvasId: 'gameCanvas',
+                    file: './aliengame/game.js'
+                },
+                zombie: {
+                    type: 'zombie',
+                    canvasId: 'gameCanvas',
+                    file: './zombie-game/game.js'
+                }
+            };
+
+            function loadGame(type) {
+                const game = games[type];
+                if (!game) return alert('Gioco non trovato!');
+
+                // Mostra loader, nascondi contenuto
+                document.getElementById('loadingScreen').style.display = 'flex';
+                document.getElementById('gameContainer').style.display = 'flex';
+
+                // Rimuovi giochi precedenti
+                stopPreviousGame();
+
+                // Carica il gioco selezionato
+                const script = document.createElement('script');
+                script.src = game.file;
+
+                script.onload = function() {
+                    if (game.type === 'alien') {
+                        window.gameLoop = startAlienGame();
+                    } else if (game.type === 'zombie') {
+                        window.gameLoop = startZombieGame();
+                    }
+
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+
+                script.onerror = function() {
+                    alert('Errore nel caricamento del gioco!');
+                    document.getElementById('gameContainer').style.display = 'none';
+                    document.getElementById('loadingScreen').style.display = 'none';
+                };
+
+                document.head.appendChild(script);
+            }
+
+            function closeGame() {
+                stopPreviousGame();
+                document.getElementById('gameContainer').style.display = 'none';
+                document.getElementById('loadingScreen').style.display = 'none';
+
+                // Pulisci canvas
+                const canvas = document.getElementById('gameCanvas');
+                canvas.width = 800;
+                canvas.height = 600;
+            }
+
+            function stopPreviousGame() {
+                if (window.gameLoop) {
+                    window.gameLoop.running = false;
+                    delete window.gameLoop;
+                }
+
+                // Rimuovi script precedenti
+                const scripts = document.querySelectorAll('script');
+                scripts.forEach(s => s.remove());
+            }
+
+            function startAlienGame() {
+                if (!games.alien) return null;
+
+                // Riconfiguriamo game.js per l'alien
+                setupGame('aliengame/game.js', 'gameCanvas');
+
+                const loop = window.gameLoop || {};
+                loop.running = true;
+                return loop;
+            }
+
+            function startZombieGame() {
+                if (!games.zombie) return null;
+
+                // Riconfiguriamo game.js per il zombie
+                setupGame('zombie-game/game.js', 'gameCanvas');
+
+                const loop = window.gameLoop || {};
+                loop.running = true;
+                return loop;
+            }
+
+            function setupGame(filePath, canvasId) {
+                // Script wrapper per caricare i giochi
+                const loader = document.createElement('script');
+                loader.innerHTML = `
+                    fetch('${filePath}')
+                        .then(r => r.text())
+                        .then(code => {
+                            const blob = new Blob([code], {type: 'text/javascript'});
+                            const url = URL.createObjectURL(blob);
+
+                            // Rimuovi event listener precedenti
+                            if(window.gameCanvas) {
+                                window.gameCanvas.removeEventListener('click', _e);
+                                window.gameCanvas.removeEventListener('mousemove', _m);
+                            }
+
+                            // Nuovo canvas e eventi
+                            const canvas = document.getElementById('${canvasId}');
+                            canvas.width = 800;
+                            canvas.height = 600;
+
+                            window.gameCanvas = canvas;
+                            ctx = canvas.getContext('2d');
+
+                            // Carica il gioco
+                            eval(code);
+
+                            // Avvia loop se esiste startGame
+                            if (typeof startGame === 'function') {
+                                setTimeout(() => {
+                                    startGame();
+                                }, 500);
+                            }
+                        })
+                        .catch(e => console.error('Errore caricamento gioco:', e));
+                `;
+
+                document.head.appendChild(loader);
+            }
+
+            // Inizializza dimensioni canvas
+            let ctx, windowSize = { width: 800, height: 600 };
+
+            function resize() {
+                windowSize = {
+                    width: Math.min(window.innerWidth - 40, 1200),
+                    height: Math.min(window.innerHeight - 40, 700)
+                };
+            }
+        </script>
+    </div>
+</body>
+</html>

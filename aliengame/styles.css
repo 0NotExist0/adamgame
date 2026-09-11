@@ -1,0 +1,91 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #0a0a1a;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+#gameCanvas {
+    display: block;
+    background: linear-gradient(180deg, #0a0a2a 0%, #1a1a4a 50%, #0a0a1a 100%);
+    z-index: 1;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none; /* Permette al mouse di raggiungere il canvas attraverso */
+}
+
+#score-board, #health-bar, #level {
+    position: absolute;
+    padding: 10px 20px;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    pointer-events: none; /* Permette al mouse di attraversare gli elementi UI */
+}
+
+#score-board {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700;
+}
+
+#health-bar {
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff4444;
+}
+
+#level {
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #44aaff;
+}
+
+button {
+    position: absolute;
+    top: 130px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 40px;
+    font-size: 20px;
+    background: linear-gradient(45deg, #ff6b35, #f7931e);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+    pointer-events: auto; /* Il pulsante deve ricevere click */
+}
+
+button:hover {
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.7);
+}
+
+button:active {
+    transform: translateX(-50%) translateY(2px);
+}

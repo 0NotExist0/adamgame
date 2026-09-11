@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alien Defender</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div id="score-board">Punteggio: <span id="score">0</span></div>
+            <div id="health-bar">Vita: <span id="health">100%</span></div>
+            <div id="level">Livello: 1</div>
+            <button id="start-btn" onclick="startGame()">Inizia Gioco</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

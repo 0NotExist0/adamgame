@@ -1,0 +1,346 @@
+/* Zombie Shooter 3D - Adamzombiegame */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #1a1a2e;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Loading Screen */
+.loading-screen, .modal, .game-over-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-screen h1 {
+  font-size: 4rem;
+  color: #ff6b6b;
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Crosshair */
+.crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 4rem;
+  z-index: 1001;
+  pointer-events: none;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+/* HUD Top Left */
+.hud-top-left {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1002;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 1rem;
+  border-radius: 15px;
+  color: white;
+  min-width: 300px;
+}
+
+.health-bar-container {
+  margin-bottom: 0.5rem;
+}
+
+.bar-label {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-bottom: 0.2rem;
+}
+
+.health-bar {
+  background: #333;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 25px;
+  position: relative;
+}
+
+.health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #feca57);
+  width: 100%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.health-fill.low {
+  background: linear-gradient(90deg, #e84393, #ff6b6b);
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.8);
+}
+
+.health-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  text-shadow: 1px 1px 2px black;
+}
+
+.score-display {
+  font-size: 1.5rem;
+  color: #feca57;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px rgba(254, 202, 87, 0.5);
+}
+
+.ammo-display {
+  font-size: 1.2rem;
+  color: #48dbfb;
+  margin-bottom: 0.5rem;
+}
+
+/* Mobile Controls */
+.mobile-controls {
+  position: fixed;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  display: none;
+  padding: 1rem;
+  pointer-events: none;
+  z-index: 1002;
+}
+
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: block;
+  }
+
+  .hud-top-left {
+    min-width: auto;
+    padding: 0.5rem;
+  }
+}
+
+.joystick-area {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: rgba(254, 202, 87, 0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(254, 202, 87, 0.3);
+}
+
+.fire-button {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1rem;
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 68, 68, 0.7);
+  border-radius: 50%;
+  color: white;
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  touch-action: none;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.5);
+}
+
+.fire-button:active {
+  background: rgba(255, 68, 68, 1);
+  transform: scale(0.95);
+}
+
+.reload-button {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 10rem;
+  width: 70px;
+  height: 70px;
+  background: rgba(255, 215, 0, 0.6);
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  touch-action: none;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.reload-button:active {
+  background: rgba(255, 215, 0, 0.8);
+}
+
+/* Multiplayer Status */
+.multiplayer-status {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  color: #48dbfb;
+  font-size: 0.9rem;
+  z-index: 1002;
+}
+
+/* Modal */
+.modal .modal-content {
+  background: rgba(26, 26, 46, 0.95);
+  padding: 2rem;
+  border-radius: 20px;
+  color: white;
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.input-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: #aaa;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+}
+
+.input-group input::placeholder {
+  color: #666;
+}
+
+.btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  margin: 0.5rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+}
+
+.status-message {
+  margin-top: 1rem;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+/* Game Over Screen */
+.game-over-screen h2 {
+  font-size: 3rem;
+  color: #ff6b6b;
+  text-shadow: 0 0 20px rgba(255, 107, 107, 0.8);
+}
+
+.game-over-screen p {
+  font-size: 1.5rem;
+  color: #feca57;
+  margin: 1rem 0;
+}
+
+/* Loading Progress */
+.loader {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(254, 202, 87, 0.3);
+  border-top-color: #feca57;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loadingProgress {
+  margin-top: 1rem;
+  color: #aaa;
+}
+
+/* Responsive */
+@media (min-width: 769px) {
+  .joystick-area {
+    display: none;
+  }
+
+  .mobile-controls {
+    padding: 0.5rem;
+  }
+
+  .fire-button, .reload-button {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  body:hover .fire-button,
+  body:hover .reload-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
